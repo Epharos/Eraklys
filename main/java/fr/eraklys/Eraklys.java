@@ -118,8 +118,6 @@ public class Eraklys
 		{
 			event.setResult(Result.DENY);
 		}
-		
-		//blblbl
 	}
 	
 	@OnlyIn(Dist.CLIENT)

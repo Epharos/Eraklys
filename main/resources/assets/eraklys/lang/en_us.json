@@ -1,0 +1,8 @@
+{
+    "group.label":"Group",
+    "group.label.chat":"§5[Group] ",
+    "group.join":"§7§l%s§r §6joined your group",
+    "group.left":"§7§l%s§r left your group",
+    "key.group":"Interface de groupe",
+    "key.categories.eraklys":"Eraklys"
+}

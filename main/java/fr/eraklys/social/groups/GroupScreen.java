@@ -12,8 +12,6 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class GroupScreen extends Screen 
@@ -125,7 +123,6 @@ public class GroupScreen extends Screen
 	      float f4 = entity.rotationPitch;
 	      float f5 = entity.prevRotationYawHead;
 	      float f6 = entity.rotationYawHead;
-	      entity.setCustomNameVisible(false);
 	      entity.renderYawOffset = 180.0F + f * 20.0F;
 	      entity.rotationYaw = 180.0F + f * 40.0F;
 	      entity.rotationPitch = -f1 * 20.0F;
@@ -144,7 +141,6 @@ public class GroupScreen extends Screen
 	      entity.rotationPitch = f4;
 	      entity.prevRotationYawHead = f5;
 	      entity.rotationYawHead = f6;
-	      entity.setCustomNameVisible(true);
 	      RenderSystem.popMatrix();
 	   }
 }

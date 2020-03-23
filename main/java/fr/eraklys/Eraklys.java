@@ -142,6 +142,8 @@ public class Eraklys
 				event.addCapability(MONEY_KEY, wrapper);
 				event.addListener(() -> wrapper.getCapability(Eraklys.MONEY_CAPABILITY).ifPresent(cap -> INVALIDATED_MONEY.put((PlayerEntity) event.getObject(), cap)));
 			}
+			
+			//Test
 		}
 		
 		@SubscribeEvent

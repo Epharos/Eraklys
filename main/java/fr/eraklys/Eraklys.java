@@ -20,6 +20,7 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -27,6 +28,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -106,6 +108,15 @@ public class Eraklys
 	public void registerNetworkPackets()
 	{
 		CHANNEL.messageBuilder(PacketUpdateGroup.class, 0).encoder(PacketUpdateGroup::write).decoder(PacketUpdateGroup::read).consumer(PacketUpdateGroup::handle).add();
+	}
+	
+	@SubscribeEvent
+	public void renderEntityName(final RenderNameplateEvent event)
+	{
+		if(Minecraft.getInstance().currentScreen instanceof GroupScreen)
+		{
+			event.setResult(Result.DENY);
+		}
 	}
 	
 	@OnlyIn(Dist.CLIENT)

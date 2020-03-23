@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class GroupScreen extends Screen 
@@ -129,7 +130,7 @@ public class GroupScreen extends Screen
 	      entity.rotationYaw = 180.0F + f * 40.0F;
 	      entity.rotationPitch = -f1 * 20.0F;
 	      entity.rotationYawHead = entity.rotationYaw;
-	      entity.prevRotationYawHead = entity.rotationYaw;
+	      entity.prevRotationYawHead = entity.rotationYaw;	      
 	      EntityRendererManager entityrenderermanager = Minecraft.getInstance().getRenderManager();
 	      quaternion1.conjugate();
 	      entityrenderermanager.func_229089_a_(quaternion1);

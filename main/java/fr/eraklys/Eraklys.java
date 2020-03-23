@@ -110,6 +110,7 @@ public class Eraklys
 		CHANNEL.messageBuilder(PacketUpdateGroup.class, 0).encoder(PacketUpdateGroup::write).decoder(PacketUpdateGroup::read).consumer(PacketUpdateGroup::handle).add();
 	}
 	
+	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void renderEntityName(final RenderNameplateEvent event)
 	{
@@ -117,6 +118,8 @@ public class Eraklys
 		{
 			event.setResult(Result.DENY);
 		}
+		
+		//blblbl
 	}
 	
 	@OnlyIn(Dist.CLIENT)

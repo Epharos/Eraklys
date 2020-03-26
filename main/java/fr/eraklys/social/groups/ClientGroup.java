@@ -59,4 +59,17 @@ public class ClientGroup
 	{
 		return ClientGroup.ownerID;
 	}
+	
+	public static boolean isInGroup(AbstractClientPlayerEntity ent)
+	{
+		for(AbstractClientPlayerEntity e : ClientGroup.otherMembersID)
+		{
+			if(e == ent)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }

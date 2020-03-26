@@ -2,7 +2,6 @@ package fr.eraklys.social.groups;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -35,7 +34,7 @@ public class GroupSession
 	{
 		if(!this.members.addPlayerToGroup(player))
 		{
-			Eraklys.LOGGER.warn("Le groupe est plein, le joueur n'a pas pu être ajouté");
+			Eraklys.LOGGER.warn("Le groupe est plein, le joueur n'a pas pu ï¿½tre ajoutï¿½");
 			return;
 		}
 		
@@ -46,7 +45,7 @@ public class GroupSession
 	{
 		if(!this.members.removePlayerFromGroup(player))
 		{
-			Eraklys.LOGGER.warn("Le joueur n'appartient pas à ce groupe, c'est pas normal d'avoir cette erreur ...");
+			Eraklys.LOGGER.warn("Le joueur n'appartient pas ï¿½ ce groupe, c'est pas normal d'avoir cette erreur ...");
 			return;
 		}
 		

@@ -3,6 +3,14 @@
     "group.label.chat":"§5[Group] ",
     "group.join":"§7§l%s§r §6joined your group",
     "group.left":"§7§l%s§r left your group",
+    
     "key.group":"Interface de groupe",
-    "key.categories.eraklys":"Eraklys"
+    "key.categories.eraklys":"Eraklys",
+    
+    "menu.invite.group":"Invite to group",
+    "menu.invite.friend":"Add to friendlist",
+    "menu.invite.guild":"Invite to guild",
+    "menu.private":"Send a private message",
+    
+    "ui.level":"Level §6%s"
 }

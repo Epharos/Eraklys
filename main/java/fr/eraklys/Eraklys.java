@@ -10,9 +10,9 @@ import fr.eraklys.player.inventory.DefaultMoneyStorage;
 import fr.eraklys.player.inventory.IMoney;
 import fr.eraklys.player.inventory.MoneyHolder;
 import fr.eraklys.player.inventory.PlayerMoneyWrapper;
-import fr.eraklys.social.groups.GroupCommand;
-import fr.eraklys.social.groups.GroupScreen;
+import fr.eraklys.social.groups.CommandGroup;
 import fr.eraklys.social.groups.PacketUpdateGroup;
+import fr.eraklys.social.groups.ScreenGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,6 +66,8 @@ public class Eraklys
 			.serverAcceptedVersions(Eraklys.PROTOCOL_VERSION::equals)
 			.simpleChannel();
 	
+	//--- OTHERS ---
+	
 	//--- --- --- ---
 	
 	public Eraklys() 
@@ -97,7 +99,7 @@ public class Eraklys
 	@SubscribeEvent
 	public void serverStarting(final FMLServerStartingEvent event)
 	{
-		GroupCommand.register(event.getCommandDispatcher());
+		CommandGroup.register(event.getCommandDispatcher());
 	}
 	
 	public void registerCapabilities()
@@ -114,7 +116,7 @@ public class Eraklys
 	@SubscribeEvent
 	public void renderEntityName(final RenderNameplateEvent event)
 	{
-		if(Minecraft.getInstance().currentScreen instanceof GroupScreen)
+		if(Minecraft.getInstance().currentScreen instanceof ScreenGroup)
 		{
 			event.setResult(Result.DENY);
 		}
@@ -126,7 +128,7 @@ public class Eraklys
 	{
 		if(ClientProxy.showGroup.isPressed())
 		{
-			Minecraft.getInstance().displayGuiScreen(new GroupScreen());
+			Minecraft.getInstance().displayGuiScreen(new ScreenGroup());
 		}
 	}
 	

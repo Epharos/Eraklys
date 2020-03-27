@@ -4,6 +4,9 @@
     "group.join":"§7§l%s§r §6joined your group",
     "group.left":"§7§l%s§r left your group",
     
+    "private.label.chat.sender":"§3[MP] to §7§l%s§r§3 : %s",
+    "private.label.chat.receiver":"§3[MP] from §7§l%s§3 : %s",
+    
     "key.group":"Interface de groupe",
     "key.categories.eraklys":"Eraklys",
     

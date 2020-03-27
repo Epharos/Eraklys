@@ -3,6 +3,7 @@ package fr.eraklys.screen;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.eraklys.screen.entry.SeparatorEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 
@@ -19,14 +20,25 @@ public class Menu extends Widget
 	{
 		this.entries.add(entry);
 		
+		int h = 0;
 		for(MenuEntry entry2 : this.entries)
 		{
 			entry2.setWidth(this.getMaxEntrySize());
-			entry2.setHeight(this.hasNext(entry2) ? 12 : 13);			
+			
+			if(entry2 instanceof SeparatorEntry)
+			{
+				entry2.setHeight(1);
+				h += 1;
+			}
+			else
+			{
+				entry2.setHeight(this.hasNext(entry2) ? 12 : 13);
+				h += 12;
+			}
 		}
 		
 		this.setWidth(this.getMaxEntrySize());
-		this.setHeight(this.entries.size() * 12 + 1);
+		this.setHeight(h + 1);
 		return this;
 	}
 	
@@ -37,7 +49,7 @@ public class Menu extends Widget
 		{
 			entry.x = this.x;
 			entry.y = this.y + i;
-			i += 12;
+			i += (entry instanceof SeparatorEntry) ? 1 : 12;
 			entry.renderButton(mouseX, mouseY, partialTick);
 		}
 	}

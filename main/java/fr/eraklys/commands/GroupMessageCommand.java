@@ -1,15 +1,16 @@
-package fr.eraklys.social.groups;
+package fr.eraklys.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import fr.eraklys.social.groups.GroupSession;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
 //TEMP
-public class CommandGroup
+public class GroupMessageCommand
 {
 	public static void register(CommandDispatcher<CommandSource> dispatcher)
 	{

@@ -6,16 +6,20 @@ import java.util.WeakHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.eraklys.commands.GroupMessageCommand;
+import fr.eraklys.commands.PrivateMessageCommand;
 import fr.eraklys.player.inventory.DefaultMoneyStorage;
 import fr.eraklys.player.inventory.IMoney;
 import fr.eraklys.player.inventory.MoneyHolder;
 import fr.eraklys.player.inventory.PlayerMoneyWrapper;
-import fr.eraklys.social.groups.CommandGroup;
 import fr.eraklys.social.groups.PacketUpdateGroup;
 import fr.eraklys.social.groups.ScreenGroup;
+import fr.eraklys.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,9 +32,11 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -38,6 +44,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 @Mod(Eraklys.MODID)
@@ -99,7 +106,8 @@ public class Eraklys
 	@SubscribeEvent
 	public void serverStarting(final FMLServerStartingEvent event)
 	{
-		CommandGroup.register(event.getCommandDispatcher());
+		GroupMessageCommand.register(event.getCommandDispatcher());
+		PrivateMessageCommand.register(event.getCommandDispatcher());
 	}
 	
 	public void registerCapabilities()
@@ -110,6 +118,7 @@ public class Eraklys
 	public void registerNetworkPackets()
 	{
 		CHANNEL.messageBuilder(PacketUpdateGroup.class, 0).encoder(PacketUpdateGroup::write).decoder(PacketUpdateGroup::read).consumer(PacketUpdateGroup::handle).add();
+//		CHANNEL.messageBuilder(PlayerUtil.PacketInteractPlayer.class, 1).encoder(PlayerUtil.PacketInteractPlayer::write).decoder(PlayerUtil.PacketInteractPlayer::read).consumer(PlayerUtil.PacketInteractPlayer::handle).add();
 	}
 	
 	@OnlyIn(Dist.CLIENT)
@@ -129,6 +138,27 @@ public class Eraklys
 		if(ClientProxy.showGroup.isPressed())
 		{
 			Minecraft.getInstance().displayGuiScreen(new ScreenGroup());
+		}
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	@SubscribeEvent
+	public void onPlayerInteractWithEntity(final PlayerInteractEvent.EntityInteract event)
+	{
+//		if(event.getSide() == LogicalSide.SERVER)
+//		{
+//			CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)event.getPlayer()), new PlayerUtil.PacketInteractPlayer(event.getTarget().getEntityId()));
+//		}
+		
+		if(event.getTarget() instanceof PlayerEntity)
+		{
+			if(event.getWorld().isRemote())
+			{
+				if(event.getPlayer().isCrouching())
+				{
+					Minecraft.getInstance().displayGuiScreen(new PlayerUtil.InteractScreen((AbstractClientPlayerEntity)event.getTarget()));
+				}
+			}
 		}
 	}
 	

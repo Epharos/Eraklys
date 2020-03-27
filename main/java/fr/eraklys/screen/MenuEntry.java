@@ -15,7 +15,7 @@ import net.minecraft.client.resources.I18n;
 public abstract class MenuEntry extends Widget
 {
 	public final List<MenuEntry> entries = new ArrayList<MenuEntry>();
-	private Menu menuIn;
+	protected Menu menuIn;
 	protected IEntry action;
 	
 	public MenuEntry(String msg, Menu menu, IEntry act) 

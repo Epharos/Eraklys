@@ -16,8 +16,6 @@ import fr.eraklys.social.groups.GroupSession;
 import fr.eraklys.social.groups.PacketAcceptGroup;
 import fr.eraklys.social.groups.PacketUpdateGroup;
 import fr.eraklys.social.groups.ScreenGroup;
-import fr.eraklys.social.notifications.GroupNotification;
-import fr.eraklys.social.notifications.Notification;
 import fr.eraklys.social.notifications.ScreenNotification;
 import fr.eraklys.util.ClientPlayerUtil;
 import net.minecraft.client.Minecraft;

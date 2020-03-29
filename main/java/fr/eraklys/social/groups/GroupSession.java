@@ -60,6 +60,11 @@ public class GroupSession
 		return groups.get(player);
 	}
 	
+	public ServerPlayerEntity[] getMemberList()
+	{
+		return this.members.getMemberList();
+	}
+	
 	public void prompt(@Nullable final ServerPlayerEntity playerSending, final ITextComponent text, @Nullable final ServerPlayerEntity playerReceiver)
 	{
 		if(playerReceiver != null)

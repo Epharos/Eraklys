@@ -1,6 +1,9 @@
 package fr.eraklys.social.groups;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -227,6 +230,119 @@ public class GroupSession
 		public ServerPlayerEntity getOwner()
 		{
 			return this.owner;
+		}
+	}
+	
+	public static class PendingRequest
+	{
+		public ServerPlayerEntity sender, receiver;
+		public int timeOut;
+		
+		public static List<PendingRequest> pendings = new ArrayList<PendingRequest>();
+		
+		public PendingRequest(ServerPlayerEntity s, ServerPlayerEntity r)
+		{
+			this.sender = s;
+			this.receiver = r;
+			this.timeOut = 1200; //30 secondes
+			
+			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
+			{
+				PendingRequest pr = it.next();
+				
+				if(((pr.sender == s || pr.sender == r) && (pr.receiver == s || pr.receiver == r)) || r == s)
+					return;
+			}
+			
+			PendingRequest.pendings.add(this);
+		}
+		
+		public void timeIsRunningOut()
+		{
+			this.timeOut--;
+		}
+		
+		public static void checkPendings()
+		{
+			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
+			{
+				PendingRequest pr = it.next();
+				pr.timeIsRunningOut();
+				
+				if(pr.timeOut <= 0)
+				{
+					pr.receiver.sendMessage(new TranslationTextComponent("group.invite.expired.receiver", pr.sender.getName().getString()));
+					pr.sender.sendMessage(new TranslationTextComponent("group.invite.expired.sender", pr.receiver.getName().getString()));
+					it.remove();
+				}
+			}
+		}
+		
+		public static void acceptTrade(ServerPlayerEntity player, ServerPlayerEntity send)
+		{
+			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
+			{
+				PendingRequest pr = it.next();
+				
+				if(pr.sender == player)
+				{
+					pr.receiver.sendMessage(new TranslationTextComponent("group.invite.expired.receiver", pr.sender.getName().getString()));
+					it.remove();
+				}
+				
+				if(pr.receiver == player)
+				{
+					if(pr.sender == send)
+					{
+						GroupSession.getPlayerGroup(send).addPlayer(player);
+						it.remove();
+					}
+					else
+					{
+						pr.sender.sendMessage(new TranslationTextComponent("group.invite.expired.sender", pr.receiver.getName().getString()));
+						it.remove();
+					}
+				}
+			}
+		}
+		
+		public static void refuseTrade(ServerPlayerEntity player, ServerPlayerEntity send)
+		{
+			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
+			{
+				PendingRequest pr = it.next();
+				
+				if(pr.receiver == player)
+				{
+					if(pr.sender == send)
+					{
+						pr.sender.sendMessage(new TranslationTextComponent("group.invite.refused.sender", pr.receiver.getName().getString()));
+						pr.receiver.sendMessage(new TranslationTextComponent("group.invite.refused.sender", pr.sender.getName().getString()));
+						it.remove();
+						return;
+					}
+				}
+			}
+		}
+		
+		public static void destroyPendingsFor(ServerPlayerEntity player)
+		{
+			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
+			{
+				PendingRequest pr = it.next();
+				
+				if(pr.sender == player)
+				{
+					pr.receiver.sendMessage(new TranslationTextComponent("group.invite.expired.receiver", pr.sender.getName().getString()));
+					it.remove();
+				}
+				
+				if(pr.receiver == player)
+				{
+					pr.sender.sendMessage(new TranslationTextComponent("group.invite.expired.sender", pr.receiver.getName().getString()));
+					it.remove();
+				}
+			}
 		}
 	}
 }

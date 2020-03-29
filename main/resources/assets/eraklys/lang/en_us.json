@@ -2,7 +2,14 @@
     "group.label":"Group",
     "group.label.chat":"§5[Group] ",
     "group.join":"§7§l%s§r §6joined your group",
-    "group.left":"§7§l%s§r left your group",
+    "group.left":"§7§l%s§r §6left your group",
+    "group.invite.error.missing":"§cThe player you invited is missing",
+    "group.invite.error.ingroup":"§c%s is already in a group",
+    "group.invite.error.ingroup":"§7§l%s§r §6was invited to your group",
+    "group.invite.expired.sender":"§7§l%s§r §6 has not responded in time...",
+    "group.invite.expired.receiver":"§6You did not respond to §7§l%s§r §6 in time...",
+    "group.invite.refused.sender":"§7§l%s§r §6 refused your invitation",
+    "group.invite.refused.receiver":"§6You refused §7§l%s§r§6's invitation",
     
     "private.label.chat.sender":"§3[MP] to §7§l%s§r§3 : %s",
     "private.label.chat.receiver":"§3[MP] from §7§l%s§3 : %s",
@@ -15,5 +22,12 @@
     "menu.invite.guild":"Invite to guild",
     "menu.private":"Send a private message",
     
-    "ui.level":"Level §6%s"
+    "notif.group.invite":"§7§l%s§r §6invited you to their group",
+    
+    "ui.level":"Level §6%s",
+    "ui.accept":"Accept",
+    "ui.refuse":"Refuse",
+    "ui.ignore":"Ignore",
+    
+    "error.badentityid":"§cSomething went wrong, a packet has a bad entity ID. Report it to an administrator!"
 }

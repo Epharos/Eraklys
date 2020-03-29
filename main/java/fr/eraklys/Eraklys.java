@@ -12,9 +12,14 @@ import fr.eraklys.player.inventory.DefaultMoneyStorage;
 import fr.eraklys.player.inventory.IMoney;
 import fr.eraklys.player.inventory.MoneyHolder;
 import fr.eraklys.player.inventory.PlayerMoneyWrapper;
+import fr.eraklys.social.groups.GroupSession;
+import fr.eraklys.social.groups.PacketAcceptGroup;
 import fr.eraklys.social.groups.PacketUpdateGroup;
 import fr.eraklys.social.groups.ScreenGroup;
-import fr.eraklys.util.PlayerUtil;
+import fr.eraklys.social.notifications.GroupNotification;
+import fr.eraklys.social.notifications.Notification;
+import fr.eraklys.social.notifications.ScreenNotification;
+import fr.eraklys.util.ClientPlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
@@ -31,12 +36,12 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -44,7 +49,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 @Mod(Eraklys.MODID)
@@ -103,6 +107,17 @@ public class Eraklys
 		
 	}
 	
+	@OnlyIn(Dist.DEDICATED_SERVER)
+	@SubscribeEvent
+	public void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event)
+	{
+		GroupSession group = GroupSession.getPlayerGroup((ServerPlayerEntity)(event.getPlayer()));
+		if(group != null)
+		{
+			group.removePlayer((ServerPlayerEntity)(event.getPlayer()));
+		}
+	}
+	
 	@SubscribeEvent
 	public void serverStarting(final FMLServerStartingEvent event)
 	{
@@ -118,7 +133,7 @@ public class Eraklys
 	public void registerNetworkPackets()
 	{
 		CHANNEL.messageBuilder(PacketUpdateGroup.class, 0).encoder(PacketUpdateGroup::write).decoder(PacketUpdateGroup::read).consumer(PacketUpdateGroup::handle).add();
-//		CHANNEL.messageBuilder(PlayerUtil.PacketInteractPlayer.class, 1).encoder(PlayerUtil.PacketInteractPlayer::write).decoder(PlayerUtil.PacketInteractPlayer::read).consumer(PlayerUtil.PacketInteractPlayer::handle).add();
+		CHANNEL.messageBuilder(PacketAcceptGroup.class, 1).encoder(PacketAcceptGroup::write).decoder(PacketAcceptGroup::read).consumer(PacketAcceptGroup::handle).add();
 	}
 	
 	@OnlyIn(Dist.CLIENT)
@@ -139,24 +154,33 @@ public class Eraklys
 		{
 			Minecraft.getInstance().displayGuiScreen(new ScreenGroup());
 		}
+		
+		if(ClientProxy.showNotif.isPressed())
+		{
+			Minecraft.getInstance().displayGuiScreen(new ScreenNotification());
+		}
 	}
+	
+	@OnlyIn(Dist.DEDICATED_SERVER)
+	@SubscribeEvent
+	public void onServerTickEvent(final ServerTickEvent event)
+	{
+		GroupSession.PendingRequest.checkPendings();
+	}
+	
+	
 	
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void onPlayerInteractWithEntity(final PlayerInteractEvent.EntityInteract event)
-	{
-//		if(event.getSide() == LogicalSide.SERVER)
-//		{
-//			CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)event.getPlayer()), new PlayerUtil.PacketInteractPlayer(event.getTarget().getEntityId()));
-//		}
-		
+	{		
 		if(event.getTarget() instanceof PlayerEntity)
 		{
 			if(event.getWorld().isRemote())
 			{
 				if(event.getPlayer().isCrouching())
 				{
-					Minecraft.getInstance().displayGuiScreen(new PlayerUtil.InteractScreen((AbstractClientPlayerEntity)event.getTarget()));
+					Minecraft.getInstance().displayGuiScreen(new ClientPlayerUtil.InteractScreen((AbstractClientPlayerEntity)event.getTarget()));
 				}
 			}
 		}

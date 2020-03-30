@@ -6,6 +6,7 @@ import fr.eraklys.screen.entry.GroupInviteEntry;
 import fr.eraklys.screen.entry.GroupOwnerEntry;
 import fr.eraklys.screen.entry.GuildInviteEntry;
 import fr.eraklys.screen.entry.KickPlayerGroupEntry;
+import fr.eraklys.screen.entry.PlayerTradeEntry;
 import fr.eraklys.screen.entry.PrivateMessageEntry;
 import fr.eraklys.screen.entry.QuitGroupEntry;
 import fr.eraklys.screen.entry.SeparatorEntry;
@@ -32,6 +33,11 @@ public class PlayerMenu extends Menu
 						Minecraft.getInstance().displayGuiScreen(new ChatScreen("/mp " + target.getName().getString() + " "));
 					}));
 			
+			this.addEntry(new PlayerTradeEntry(this,
+					ent -> {
+						
+					}));
+			
 			this.addEntry(new SeparatorEntry(this));
 			
 			if(ClientGroup.isInGroup(Minecraft.getInstance().player) && ClientGroup.isInGroup(target))
@@ -52,10 +58,16 @@ public class PlayerMenu extends Menu
 			
 			if(!ClientGroup.isInGroup(e) && ClientGroup.groupSize() < 6)
 				this.addEntry(new GroupInviteEntry(this, ent ->  ClientPlayerUtil.groupInvite(target.getEntityId())));
-			this.addEntry(new GuildInviteEntry(this, ent -> {}));
+			this.addEntry(new GuildInviteEntry(this,
+					ent -> {
+				
+					}));
 			this.addEntry(new SeparatorEntry(this));
 			
-			this.addEntry(new FriendInviteEntry(this, ent -> {}));
+			this.addEntry(new FriendInviteEntry(this,
+					ent -> {
+				
+					}));
 		}
 		else
 		{

@@ -8,6 +8,9 @@ import org.apache.logging.log4j.Logger;
 
 import fr.eraklys.commands.GroupMessageCommand;
 import fr.eraklys.commands.PrivateMessageCommand;
+import fr.eraklys.economy.trading.ContainerTrading;
+import fr.eraklys.economy.trading.PacketTraderName;
+import fr.eraklys.economy.trading.PacketUpdateTradingInventory;
 import fr.eraklys.player.inventory.DefaultMoneyStorage;
 import fr.eraklys.player.inventory.IMoney;
 import fr.eraklys.player.inventory.MoneyHolder;
@@ -25,6 +28,7 @@ import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,7 +38,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -76,6 +82,10 @@ public class Eraklys
 			.clientAcceptedVersions(Eraklys.PROTOCOL_VERSION::equals)
 			.serverAcceptedVersions(Eraklys.PROTOCOL_VERSION::equals)
 			.simpleChannel();
+	
+	//--- CONTAINERS ---
+	
+	public static ContainerType<?> tradingContainer;
 	
 	//--- OTHERS ---
 	
@@ -140,6 +150,8 @@ public class Eraklys
 		CHANNEL.messageBuilder(PacketAcceptGroup.class, i++).encoder(PacketAcceptGroup::write).decoder(PacketAcceptGroup::read).consumer(PacketAcceptGroup::handle).add();
 		CHANNEL.messageBuilder(PacketInviteGroup.class, i++).encoder(PacketInviteGroup::write).decoder(PacketInviteGroup::read).consumer(PacketInviteGroup::handle).add();
 		CHANNEL.messageBuilder(PacketKickGroupPlayer.class, i++).encoder(PacketKickGroupPlayer::write).decoder(PacketKickGroupPlayer::read).consumer(PacketKickGroupPlayer::handle).add();
+		CHANNEL.messageBuilder(PacketUpdateTradingInventory.class, i++).encoder(PacketUpdateTradingInventory::write).decoder(PacketUpdateTradingInventory::read).consumer(PacketUpdateTradingInventory::handle).add();
+		CHANNEL.messageBuilder(PacketTraderName.class, i++).encoder(PacketTraderName::write).decoder(PacketTraderName::read).consumer(PacketTraderName::handle).add();
 	}
 	
 	@OnlyIn(Dist.CLIENT)
@@ -220,5 +232,13 @@ public class Eraklys
 				});
 			}
 		}
+		
+		@SubscribeEvent
+        public static void registerContainers(final RegistryEvent.Register<ContainerType<?>> event)
+        {
+        	event.getRegistry().registerAll(
+        				tradingContainer = IForgeContainerType.create(ContainerTrading::new).setRegistryName(new ResourceLocation(Eraklys.MODID, "container_trading"))
+        			);
+        }
 	}
 }

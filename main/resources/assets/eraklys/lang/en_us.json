@@ -29,6 +29,7 @@
     "menu.group.kick.player":"Kick player from group",
     "menu.group.setowner":"Set group owner",
     "menu.group.quit":"Quit group",
+    "menu.trade.player":"Trading",
     
     "notif.group.invite":"§7§l%s§r §6invited you to their group",
     

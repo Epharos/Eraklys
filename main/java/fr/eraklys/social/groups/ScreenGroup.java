@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import fr.eraklys.Eraklys;
 import fr.eraklys.screen.ClickableText;
 import fr.eraklys.screen.Menu;
+import fr.eraklys.screen.PlayerMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -33,6 +34,12 @@ public class ScreenGroup extends Screen
 	
 	protected void init()
 	{
+		if(ClientGroup.groupSize() < 2)
+		{
+			this.onClose();
+			return;
+		}
+		
 		super.init();
 		this.xSize = 160 * (ClientGroup.groupSize() <= 3 ? ClientGroup.groupSize() : 3);
 		this.ySize = 86 * (ClientGroup.groupSize() <= 3 ? 1 : 2);
@@ -75,16 +82,7 @@ public class ScreenGroup extends Screen
 	
 	public void setMenu(Menu menu)
 	{
-		for(Iterator<Widget> it = this.buttons.iterator() ; it.hasNext() ; )
-		{
-			Widget w = it.next();
-			
-			if(w instanceof Menu)
-			{
-				it.remove();
-			}
-		}
-		
+		this.closeMenu();		
 		this.addButton(menu);
 	}
 	
@@ -101,6 +99,19 @@ public class ScreenGroup extends Screen
 		}
 		
 		return false;
+	}
+	
+	public void closeMenu()
+	{
+		for(Iterator<Widget> it = this.buttons.iterator() ; it.hasNext() ; )
+		{
+			Widget w = it.next();
+			
+			if(w instanceof Menu)
+			{
+				it.remove();
+			}
+		}
 	}
 	
 	public void render(int mouseX, int mouseY, float partialTicks) 

@@ -17,16 +17,24 @@ public class GroupNotification extends Notification
 	{
 		super(0, 0, Notification.NOTIF_WIDTH, 0, "");
 		this.senderID = id;
+		this.setMessage(I18n.format("notif.group.invite", Minecraft.getInstance().world.getEntityByID(senderID).getName().getString()));
 		List<String> notifText = FontRendererStringUtil.splitStringMultiline(this.getWidth() - 20, this.getMessage());
 		this.setHeight(notifText.size() * 9 + 17);
-		this.setMessage(I18n.format("notif.group.invite", Minecraft.getInstance().world.getEntityByID(senderID).getName().getString()));
-		this.addWidget(new ClickableText(4, this.getHeight() - 11, I18n.format("ui.accept"), ct -> ClientPlayerUtil.acceptTrade(this.senderID, true)));
-		this.addWidget(new ClickableText(this.getWidth() / 2 - Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format("ui.refuse")) / 2, this.getHeight() - 11, I18n.format("ui.refuse"), ct -> ClientPlayerUtil.acceptTrade(this.senderID, false)));
-		this.addWidget(new ClickableText(this.getWidth() - 3 - Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format("ui.ignore")), this.getHeight() - 11, I18n.format("ui.ignore"), ct -> {}/*ClientPlayerUtil.ignorePlayer(this.senderID)*/));
+		this.addWidget(new ClickableText(4, this.getHeight() - 11, I18n.format("ui.accept"), 
+				ct -> { ClientPlayerUtil.acceptTrade(this.senderID, true); ClientPlayerUtil.deleteGroupNotification(senderID); }));
+		this.addWidget(new ClickableText(this.getWidth() / 2 - Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format("ui.refuse")) / 2, this.getHeight() - 11, I18n.format("ui.refuse"), 
+				ct -> { ClientPlayerUtil.acceptTrade(this.senderID, false); ClientPlayerUtil.deleteGroupNotification(senderID); }));
+		this.addWidget(new ClickableText(this.getWidth() - 3 - Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format("ui.ignore")), this.getHeight() - 11, I18n.format("ui.ignore"), 
+				ct -> {}/*ClientPlayerUtil.ignorePlayer(this.senderID)*/));
 	}
 
 	public Widget defaultAction() 
 	{
 		return this.getWidgets().get(1);
+	}
+	
+	public boolean equals(Notification n)
+	{
+		return super.equals(n) && this.senderID == ((GroupNotification)n).senderID;
 	}
 }

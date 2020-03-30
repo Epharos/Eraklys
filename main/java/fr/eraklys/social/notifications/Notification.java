@@ -106,4 +106,9 @@ public abstract class Notification extends Widget
 			}
 		}
 	}
+	
+	public boolean equals(Notification n)
+	{
+		return this.getClass() == n.getClass();
+	}
 }

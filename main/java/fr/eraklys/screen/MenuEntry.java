@@ -6,9 +6,11 @@ import java.util.List;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import fr.eraklys.Eraklys;
+import fr.eraklys.social.groups.ScreenGroup;
+import fr.eraklys.util.ClientPlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
 
@@ -44,8 +46,16 @@ public abstract class MenuEntry extends Widget
 	
 	public void onClick(double p_onClick_1_, double p_onClick_3_) 
 	{
-		Eraklys.LOGGER.warn("Click sur " + this.getMessage());
 		this.action.onPress(this);
+		
+		if(Minecraft.getInstance().currentScreen != null)
+		{
+			if(Minecraft.getInstance().currentScreen instanceof ClientPlayerUtil.InteractScreen)
+				Minecraft.getInstance().displayGuiScreen((Screen) null);
+			if(Minecraft.getInstance().currentScreen instanceof ScreenGroup)
+				((ScreenGroup)Minecraft.getInstance().currentScreen).closeMenu();
+		}
+		
 	}
 	
 	public interface IEntry

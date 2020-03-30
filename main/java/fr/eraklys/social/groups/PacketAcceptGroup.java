@@ -40,14 +40,14 @@ public class PacketAcceptGroup
 				if(packet.acceptance)
 				{
 					if(context.get().getSender().getServerWorld().getEntityByID(packet.playerID) instanceof ServerPlayerEntity)
-						GroupSession.PendingRequest.acceptTrade(context.get().getSender(), (ServerPlayerEntity)context.get().getSender().getServerWorld().getEntityByID(packet.playerID));
+						GroupSession.PendingRequest.acceptGroup(context.get().getSender(), (ServerPlayerEntity)context.get().getSender().getServerWorld().getEntityByID(packet.playerID));
 					else
 						context.get().getSender().sendMessage(new TranslationTextComponent("error.badentityid"));
 				}
 				else
 				{
 					if(context.get().getSender().getServerWorld().getEntityByID(packet.playerID) instanceof ServerPlayerEntity)
-						GroupSession.PendingRequest.refuseTrade(context.get().getSender(), (ServerPlayerEntity)context.get().getSender().getServerWorld().getEntityByID(packet.playerID));
+						GroupSession.PendingRequest.refuseGroup(context.get().getSender(), (ServerPlayerEntity)context.get().getSender().getServerWorld().getEntityByID(packet.playerID));
 					else
 						context.get().getSender().sendMessage(new TranslationTextComponent("error.badentityid"));
 				}

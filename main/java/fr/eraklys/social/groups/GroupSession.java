@@ -37,7 +37,7 @@ public class GroupSession
 	{
 		if(!this.members.addPlayerToGroup(player))
 		{
-			Eraklys.LOGGER.warn("Le groupe est plein, le joueur n'a pas pu �tre ajout�");
+			Eraklys.LOGGER.warn("Le groupe est plein, le joueur n'a pas pu être ajouté");
 			return;
 		}
 		
@@ -48,7 +48,7 @@ public class GroupSession
 	{
 		if(!this.members.removePlayerFromGroup(player))
 		{
-			Eraklys.LOGGER.warn("Le joueur n'appartient pas � ce groupe, c'est pas normal d'avoir cette erreur ...");
+			Eraklys.LOGGER.warn("Le joueur n'appartient pas à ce groupe, c'est pas normal d'avoir cette erreur ...");
 			return;
 		}
 		
@@ -77,7 +77,7 @@ public class GroupSession
 		{
 			if(member != null)
 				member.sendMessage(new TranslationTextComponent("group.label.chat")
-						.appendSibling(new StringTextComponent(playerSending != null ? " " + playerSending.getName().getFormattedText() + " : " : " "))
+						.appendSibling(new StringTextComponent(playerSending != null ? playerSending.getName().getFormattedText() + " : " : ""))
 						.appendSibling(text));
 		}
 	}
@@ -87,6 +87,22 @@ public class GroupSession
 		this.prompt(null, text, null);
 	}
 	
+	public boolean isOwner(ServerPlayerEntity player)
+	{
+		return player == this.members.getOwner();
+	}
+	
+	public void setOwner(ServerPlayerEntity player)
+	{
+		this.members.setOwner(player);
+		
+		for(ServerPlayerEntity p : this.getMemberList())
+		{
+			if(p != null)
+				Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new PacketUpdateGroup(this.members.getOwner().getEntityId(), 2));
+		}
+	}
+		
 	private class GroupMembersList 
 	{
 		public static final int maxGroupSize = 6;
@@ -151,6 +167,8 @@ public class GroupSession
 				{
 					players[i] = null;
 					GroupSession.groups.put(player, null);
+					PendingRequest.removeNotifsOnInvitedPlayers(player);
+					Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new PacketUpdateGroup(0, -1));
 					
 					if(this.memberCount() < 2)
 					{
@@ -158,9 +176,12 @@ public class GroupSession
 						return true;
 					}
 					
+					boolean flag = false;
+					
 					if(player == this.getOwner())
 					{
 						this.newOwner();
+						flag = true;
 					}
 					
 					for(int k = 0 ; k < GroupMembersList.maxGroupSize ; k++)
@@ -169,10 +190,9 @@ public class GroupSession
 						{
 							final ServerPlayerEntity target = this.getMember(k);
 							Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new PacketUpdateGroup(player.getEntityId(), 1));
-							Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new PacketUpdateGroup(this.getOwner().getEntityId(), 2));
 							
-							if(target != player)
-								Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new PacketUpdateGroup(target.getEntityId(), 1));
+							if(flag)
+								Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new PacketUpdateGroup(this.getOwner().getEntityId(), 2));
 						}
 					}
 					
@@ -283,7 +303,7 @@ public class GroupSession
 			}
 		}
 		
-		public static void acceptTrade(ServerPlayerEntity player, ServerPlayerEntity send)
+		public static void acceptGroup(ServerPlayerEntity player, ServerPlayerEntity send)
 		{
 			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
 			{
@@ -299,7 +319,14 @@ public class GroupSession
 				{
 					if(pr.sender == send)
 					{
-						GroupSession.getPlayerGroup(send).addPlayer(player);
+						if(GroupSession.getPlayerGroup(send) != null)
+							GroupSession.getPlayerGroup(send).addPlayer(player);
+						else
+						{
+							GroupSession.createGroup(send);
+							GroupSession.getPlayerGroup(send).addPlayer(player);
+						}
+						
 						it.remove();
 					}
 					else
@@ -311,7 +338,7 @@ public class GroupSession
 			}
 		}
 		
-		public static void refuseTrade(ServerPlayerEntity player, ServerPlayerEntity send)
+		public static void refuseGroup(ServerPlayerEntity player, ServerPlayerEntity send)
 		{
 			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
 			{
@@ -339,12 +366,28 @@ public class GroupSession
 				if(pr.sender == player)
 				{
 					pr.receiver.sendMessage(new TranslationTextComponent("group.invite.expired.receiver", pr.sender.getName().getString()));
+					Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> pr.receiver), new PacketInviteGroup(player.getEntityId(), false));
 					it.remove();
 				}
 				
 				if(pr.receiver == player)
 				{
 					pr.sender.sendMessage(new TranslationTextComponent("group.invite.expired.sender", pr.receiver.getName().getString()));
+					it.remove();
+				}
+			}
+		}
+		
+		public static void removeNotifsOnInvitedPlayers(ServerPlayerEntity player)
+		{
+			for(Iterator<PendingRequest> it = PendingRequest.pendings.iterator() ; it.hasNext() ;)
+			{
+				PendingRequest pr = it.next();
+				
+				if(pr.sender == player)
+				{
+					pr.receiver.sendMessage(new TranslationTextComponent("group.invite.expired.receiver", pr.sender.getName().getString()));
+					Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> pr.receiver), new PacketInviteGroup(player.getEntityId(), false));
 					it.remove();
 				}
 			}

@@ -27,10 +27,7 @@ public class GroupMessageCommand
 		
 		if(session != null)
 		{
-			for(ServerPlayerEntity player : session.getMemberList())
-			{
-				player.sendMessage(new TranslationTextComponent("group.label.chat").appendSibling(new StringTextComponent(asPlayer.getName().getString() + " : " + message)));
-			}
+			session.prompt(asPlayer, new StringTextComponent(message), null);
 		}
 		else
 		{

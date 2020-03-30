@@ -14,6 +14,8 @@ import fr.eraklys.player.inventory.MoneyHolder;
 import fr.eraklys.player.inventory.PlayerMoneyWrapper;
 import fr.eraklys.social.groups.GroupSession;
 import fr.eraklys.social.groups.PacketAcceptGroup;
+import fr.eraklys.social.groups.PacketInviteGroup;
+import fr.eraklys.social.groups.PacketKickGroupPlayer;
 import fr.eraklys.social.groups.PacketUpdateGroup;
 import fr.eraklys.social.groups.ScreenGroup;
 import fr.eraklys.social.notifications.ScreenNotification;
@@ -110,10 +112,13 @@ public class Eraklys
 	public void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event)
 	{
 		GroupSession group = GroupSession.getPlayerGroup((ServerPlayerEntity)(event.getPlayer()));
+		
 		if(group != null)
 		{
 			group.removePlayer((ServerPlayerEntity)(event.getPlayer()));
 		}
+		
+		GroupSession.PendingRequest.destroyPendingsFor((ServerPlayerEntity)(event.getPlayer()));
 	}
 	
 	@SubscribeEvent
@@ -130,8 +135,11 @@ public class Eraklys
 	
 	public void registerNetworkPackets()
 	{
-		CHANNEL.messageBuilder(PacketUpdateGroup.class, 0).encoder(PacketUpdateGroup::write).decoder(PacketUpdateGroup::read).consumer(PacketUpdateGroup::handle).add();
-		CHANNEL.messageBuilder(PacketAcceptGroup.class, 1).encoder(PacketAcceptGroup::write).decoder(PacketAcceptGroup::read).consumer(PacketAcceptGroup::handle).add();
+		int i = 0;
+		CHANNEL.messageBuilder(PacketUpdateGroup.class, i++).encoder(PacketUpdateGroup::write).decoder(PacketUpdateGroup::read).consumer(PacketUpdateGroup::handle).add();
+		CHANNEL.messageBuilder(PacketAcceptGroup.class, i++).encoder(PacketAcceptGroup::write).decoder(PacketAcceptGroup::read).consumer(PacketAcceptGroup::handle).add();
+		CHANNEL.messageBuilder(PacketInviteGroup.class, i++).encoder(PacketInviteGroup::write).decoder(PacketInviteGroup::read).consumer(PacketInviteGroup::handle).add();
+		CHANNEL.messageBuilder(PacketKickGroupPlayer.class, i++).encoder(PacketKickGroupPlayer::write).decoder(PacketKickGroupPlayer::read).consumer(PacketKickGroupPlayer::handle).add();
 	}
 	
 	@OnlyIn(Dist.CLIENT)

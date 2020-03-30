@@ -28,7 +28,8 @@ public class ScreenNotification extends Screen
 	
 	protected void init()
 	{
-		ScreenNotification.addNotification(new GroupNotification(Minecraft.getInstance().player.getEntityId()));
+		if(notifications.size() < 1)
+			this.onClose();
 		super.init();
 		this.guiLeft = this.width - Notification.NOTIF_WIDTH - 20;
 		this.guiTop = this.height / 2;
@@ -62,6 +63,7 @@ public class ScreenNotification extends Screen
 		}
 		
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		fill(this.guiLeft - 1, this.guiTop - 1, this.guiLeft + Notification.NOTIF_WIDTH + 1, this.guiTop + Math.min(this.h, this.getTheoricalHeight()) + 1, 0xffbbbbbb);
 		scissorBox(this.guiLeft - 1, this.guiTop - 1, this.guiLeft + Notification.NOTIF_WIDTH + 5, this.guiTop + this.h + 1);
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		super.render(mouseX, mouseY, partialTicks);
